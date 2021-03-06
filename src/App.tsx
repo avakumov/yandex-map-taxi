@@ -1,11 +1,11 @@
 import React from 'react'
-import TaxiCard from "./components/TaxiCard"
+import Home from "./pages/Home"
 
 
 function App() {
   return (
-    <div className="p-10">
-      <TaxiCard model="Toyota corolla" color="white" licensePlate="18 o342TT"/>
+    <div className="container mx-auto px-4">
+      <Home/>
     </div>
   );
 }
