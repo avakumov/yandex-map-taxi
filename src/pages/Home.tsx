@@ -4,6 +4,8 @@ import TaxiCard from "../components/TaxiCard";
 import TaxiRow from "../components/TaxiRow";
 import { ITaxi } from "../components/TaxiCard";
 import { YMapsApi } from "react-yandex-maps";
+import {getTaxi, order } from "../api"
+import { CrewI} from "../api"
 
 const t = {
   model: "tesla",
@@ -13,12 +15,14 @@ const t = {
 };
 function Home() {
   const [taxi, setTaxi] = useState<ITaxi | null>(t);
+  const [cars, stCars] = useState<CrewI []>([]);
   const [ymap, setYmap] = useState<any>();
   const [ymapApi, setYmapApi] = useState<YMapsApi>();
   const [currentAddress, setCurrentAdress] = useState<string>("")
-  const [coordinates, setCoordinates] = useState();
+  const [coordinates, setCoordinates] = useState([56.8619, 53.2324]);
 
   useEffect(rerenderMarker, [coordinates, currentAddress])
+  useEffect(getCars, [coordinates, currentAddress])
 
   function onLoadYMapApi(ymap: any) {
     setYmapApi(ymap);
@@ -108,6 +112,28 @@ function Home() {
       });
   }
 
+  function handleOrder() {
+
+ 
+  }
+
+  function getCars() {
+    if (coordinates && currentAddress) {
+      const taxiRequest = {
+        source_time: "time",
+        addresses: [{
+          address: currentAddress,
+          lat: coordinates[0],
+          lon: coordinates[1]
+        }
+        ]
+      }
+      getTaxi(taxiRequest).then(res => {
+        console.log("RES ", res)
+      })
+    }
+  }
+
 
 
   return (
@@ -151,7 +177,7 @@ function Home() {
           {taxi && <TaxiRow {...taxi} />}
         </div>
       </div>
-      <button className="bg-green-600 border border-gray-300 rounded-md hover:bg-green-500 px-4 py-1 shadow-md max-w-min self-center">
+      <button onClick={handleOrder} className="bg-green-600 border border-gray-300 rounded-md hover:bg-green-500 px-4 py-1 shadow-md max-w-min self-center">
         Заказать
       </button>
     </div>
