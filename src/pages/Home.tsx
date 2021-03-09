@@ -3,30 +3,28 @@ import { Map } from "react-yandex-maps"
 import _ from "lodash"
 import { format } from "date-fns"
 import { useHistory } from "react-router-dom"
+import { connect } from "react-redux"
 import TaxiCard from "../components/TaxiCard"
 import TaxiRow from "../components/TaxiRow"
-import { YMapsApi } from "react-yandex-maps"
 import { api } from "../api"
 import { CrewI } from "../api"
+import { taxiActions } from "../redux/actions"
 
-function Home() {
+function Home({ ymapApi, setMapApi, getOrder }: any) {
   const [taxi, setTaxi] = useState<CrewI | null>(null)
   const [cars, setCars] = useState<CrewI[]>([])
   const [ymap, setYmap] = useState<any>()
-  const [ymapApi, setYmapApi] = useState<YMapsApi>()
   const [currentAddress, setCurrentAdress] = useState<string>("")
   const [coordinates, setCoordinates] = useState<Array<number>>()
   const [showError, setShowError] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [errorMessage, setErrorMessage] = useState("Обязательно для заполнения")
   const history = useHistory()
-  // const debounceSearch = useCallback(_.debounce((addr) => searchAddress(addr), 1000), [])
-  // const debounceSearch = useRef(_.debounce(searchAddress, 1000)).current
 
   useEffect(validate, [currentAddress, coordinates])
 
   function onLoadYMapApi(ymap: any) {
-    setYmapApi(ymap)
+    setMapApi(ymap)
   }
 
   function createPlacemark(coord: Array<number>, address: string) {
@@ -158,7 +156,6 @@ function Home() {
     setSubmitted(true)
     if (errorMessage) {
       setShowError(true)
-      console.log("not send")
       return
     }
     if (coordinates && taxi) {
@@ -173,13 +170,7 @@ function Home() {
           },
         ],
       }
-      api.order(order).then((res) => {
-        console.log(res)
-        history.push({
-          pathname: "/order",
-          state: res,
-        })
-      })
+      getOrder(order, history)
     }
   }
 
@@ -193,7 +184,7 @@ function Home() {
           </label>
           <div className="w-2/3 h-10">
             <input
-              className="p-2 border border-gray-200 hover:border-gray-400 focus:outline-none rounded shadow-md min-w-full"
+              className="p-2 border border-gray-200 hover:border-gray-400 focus:outline-none rounded shadow-md w-96"
               id="address"
               placeholder="Введите адрес"
               type="text"
@@ -251,4 +242,18 @@ function Home() {
   )
 }
 
-export default Home
+// export default Home
+
+function mapStateToProps(state: any) {
+  return {
+    ymapApi: state.taxi.mapApi,
+  }
+}
+function mapDispatchToProps(dispatch: any) {
+  return {
+    setMapApi: (mapApi: any) => dispatch(taxiActions.setMapApi(mapApi)),
+    getOrder: (order: any, history: any) => dispatch(taxiActions.getOrder(order, history)),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home)

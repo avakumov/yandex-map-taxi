@@ -1,8 +1,9 @@
-import { useHistory, Link } from "react-router-dom"
-function Order() {
-  const history = useHistory()
-  const order = history.location.state.data
-  console.log(order)
+import { Link } from "react-router-dom"
+import { connect } from "react-redux"
+function Order({ order, isLoadingOrder }) {
+  if (isLoadingOrder) {
+    return <div>Загрузка</div>
+  }
   return order ? (
     <div className="mt-10 text-lg">
       <div className="text-xl">Ваш заказ принят. </div>
@@ -22,4 +23,10 @@ function Order() {
   )
 }
 
-export default Order
+function mapStateToProps(state) {
+  return {
+    order: state.taxi.order,
+  }
+}
+
+export default connect(mapStateToProps)(Order)

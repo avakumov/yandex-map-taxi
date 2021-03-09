@@ -3,7 +3,7 @@ import { CrewI } from "../api"
 
 function TaxiCard(car: CrewI): JSX.Element {
   return (
-    <div className="flex shadow-md w-max p-3 rounded border border-gray-200">
+    <div className="flex justify-around shadow-md p-3 rounded border border-gray-200 w-64">
       <img className="w-16 fill-current text-yellow-100" src={taxiImage} alt="taxi" />
       <div className="flex flex-col pl-4">
         <div className="text-2xl">{car.car_model}</div>
