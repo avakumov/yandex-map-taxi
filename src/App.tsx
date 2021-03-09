@@ -9,7 +9,7 @@ function App() {
     <YMaps
       query={{
         lang: "ru_RU",
-        apikey: "6866d6c5-0459-42ba-9faf-d7aa5e46a863",
+        apikey: process.env.REACT_APP_YANDEX_API_KEY,
         load: "package.full",
       }}
     >
