@@ -1,23 +1,20 @@
 import taxiImage from "../images/taxi.svg"
+import {CrewI} from "../api"
 
-export interface ITaxi {
-    model: string
-    color: string
-    licensePlate?: string
-    distance?: string
-  }
 
-function TaxiRow(taxi:ITaxi):JSX.Element {
+function TaxiRow(car:CrewI):JSX.Element {
 
     return(
-        <div className="flex bg-blue-50 p-1  border-b-0 border border-gray-300 justify-between items-center">
+        <div data-carid={car.crew_id} className="flex p-1  border-b-2 
+         border-gray-200 justify-start items-center 
+         hover:border-green-300  hover:bg-green-300 cursor-pointer hover:shadow-md">
             <img className="w-8 mx-1 fill-current text-yellow-100" src={taxiImage} alt="taxi"/>
-            <div className="flex flex-col">
-                <div className="text-xl">{taxi.model}</div>
-                <div className="">{taxi.color}</div>
+            <div className="pl-1 flex flex-col">
+                <div className="text-xl">{car.car_model}</div>
+                <div className="">{car.car_color} </div>
             </div>
-            <div>
-                {taxi.distance&&taxi.distance}
+            <div className="flex-grow text-right">
+                {car.distance} м
             </div>
         </div>
     )
