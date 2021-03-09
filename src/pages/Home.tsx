@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react"
 import { Map } from "react-yandex-maps"
 import _ from "lodash"
 import { format } from "date-fns"
+import { useHistory } from "react-router-dom"
 import TaxiCard from "../components/TaxiCard"
 import TaxiRow from "../components/TaxiRow"
 import { YMapsApi } from "react-yandex-maps"
@@ -18,6 +19,7 @@ function Home() {
   const [showError, setShowError] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [errorMessage, setErrorMessage] = useState("Обязательно для заполнения")
+  const history = useHistory()
   // const debounceSearch = useCallback(_.debounce((addr) => searchAddress(addr), 1000), [])
   // const debounceSearch = useRef(_.debounce(searchAddress, 1000)).current
 
@@ -173,6 +175,10 @@ function Home() {
       }
       api.order(order).then((res) => {
         console.log(res)
+        history.push({
+          pathname: "/order",
+          state: res,
+        })
       })
     }
   }

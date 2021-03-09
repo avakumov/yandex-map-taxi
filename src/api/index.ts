@@ -36,13 +36,13 @@ interface OrderI extends GetTaxiI {
   crew_id: string
 }
 
-interface OrderResponseI {
+export interface OrderResponseI {
   code: number
   descr: string
   data: {
-    order_id: number
+    order_id: string
+    order_req: any
   }
-  req: any
 }
 
 async function getTaxi(getTaxi: GetTaxiI) {
@@ -85,9 +85,9 @@ async function order(order: OrderI) {
       resolve({
         code: 0,
         descr: "OK",
-        req: order,
         data: {
-          order_id: 123,
+          order_id: uuidv1(),
+          order_req: order,
         },
       })
     }, 1000)
