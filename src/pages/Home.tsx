@@ -17,8 +17,9 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
   const [coordinates, setCoordinates] = useState<Array<number>>()
   const [showError, setShowError] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [iconAddress, setIconAddress] = useState("")
   const [errorMessage, setErrorMessage] = useState("Обязательно для заполнения")
-  useEffect(validate, [currentAddress, coordinates])
+  useEffect(validate, [currentAddress, iconAddress])
 
   const history = useHistory()
 
@@ -67,25 +68,37 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
     errorMessage && submitted ? setShowError(true) : setShowError(false)
   }
   function validateAddress() {
-    if (currentAddress) {
-      const arr = currentAddress.split(",")
-      if (arr.length !== 2) {
-        setErrorMessage("Формат адреса неверный. Верный - улица, дом")
-        return
-      }
-    }
 
     if (!currentAddress) {
-      setErrorMessage("Обязательно для заполнения")
-      return
+      return setErrorMessage("Обязательно для заполнения")
+    }
+    const arr = currentAddress.split(",")
+    if (arr.length !== 2) {
+      return setErrorMessage("Формат адреса неверный. Улица и дом через запятую")
     }
 
     if (!coordinates) {
-      setErrorMessage("Не установлено место на карте")
-      return
+      return setErrorMessage("Не установлено место на карте")
+    }
+    if (!checkAddress(iconAddress, currentAddress)) {
+      return setErrorMessage("Ошибка в адресе")
     }
     setErrorMessage("")
   }
+
+  function checkAddress(address1: string, address2: string) {
+    const streetNumber1 = address1.split(",")
+    const streetNumber2 = address2.split(",")
+
+    if (streetNumber1.length !== 2 || streetNumber2.length !== 2) return false
+    const [street1, number1] = streetNumber1
+    const [street2, number2] = streetNumber2
+
+    if (number1.toLowerCase().trim() !== number2.toLowerCase().trim()) return false
+    if (!street1.toLowerCase().match(street2.trim().toLowerCase())) return false
+    return true
+  }
+
   function searchAddress(address: any) {
     ymapApi
       ?.geocode(`Ижевск, ${address}`, {
@@ -112,13 +125,12 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
     ymapApi?.geocode(coords).then(function (res: any) {
       const firstGeoObject = res.geoObjects.get(0)
       const address = firstGeoObject.properties.get("name")
-      isSetInputAddress && setCurrentAdress(address)
-    
+
       const taxiRequest = {
         source_time: "time",
         addresses: [
           {
-            address: currentAddress,
+            address: address,
             lat: coords[0],
             lon: coords[1],
           },
@@ -132,7 +144,6 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
         //точка откуда
         const placeMarker = createPlacemark(coords, address)
         ymap.geoObjects.add(placeMarker)
-        
 
         const cars = res.data.crews_info
         cars.sort((a, b) => a.distance - b.distance)
@@ -143,10 +154,10 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
         //рендерить автомобили
         cars.forEach((car) => {
           const placeMarkerCar = createPlacemarkCar(car)
-
           ymap.geoObjects.add(placeMarkerCar)
-          const len = ymap.geoObjects.getLength()
         })
+        isSetInputAddress && setCurrentAdress(address)
+        setIconAddress(address)
       })
     })
   }
