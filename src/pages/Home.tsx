@@ -20,11 +20,16 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
   const [iconAddress, setIconAddress] = useState("")
   const [errorMessage, setErrorMessage] = useState("Обязательно для заполнения")
   useEffect(validate, [currentAddress, iconAddress])
+  useEffect(changeCenterMap, [coordinates])
 
   const history = useHistory()
 
   function onLoadYMapApi(ymap: any) {
     setMapApi(ymap)
+  }
+
+  function changeCenterMap() {
+    ymap?.setCenter(coordinates);
   }
 
   function createPlacemark(coord: Array<number>, address: string) {
@@ -224,7 +229,7 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
             <Map
               height="100%"
               width="100%"
-              defaultState={{ center: [56.8619, 53.2324], zoom: 11 }}
+              defaultState={{ center: [56.8619, 53.2324], zoom: 13 }}
               onLoad={onLoadYMapApi}
               instanceRef={(m) => {
                 setYmap(m)
