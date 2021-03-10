@@ -1,6 +1,5 @@
-import { useState, useCallback, useRef, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { Map } from "react-yandex-maps"
-import _ from "lodash"
 import { format } from "date-fns"
 import { useHistory } from "react-router-dom"
 import { connect } from "react-redux"
@@ -19,9 +18,11 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
   const [showError, setShowError] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [errorMessage, setErrorMessage] = useState("Обязательно для заполнения")
+  useEffect(validate, [currentAddress, coordinates])
+
+
   const history = useHistory()
 
-  useEffect(validate, [currentAddress, coordinates])
 
   function onLoadYMapApi(ymap: any) {
     setMapApi(ymap)
@@ -192,9 +193,9 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
               value={currentAddress}
             />
             {showError ? (
-              <span className="text-red-600 pl-2 h-5">{errorMessage}</span>
+              <div className="text-red-600 pl-2 h-10">{errorMessage}</div>
             ) : (
-              <span className="h-5"> </span>
+              <div className="h-10"> </div>
             )}
           </div>
         </div>
@@ -242,7 +243,6 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
   )
 }
 
-// export default Home
 
 function mapStateToProps(state: any) {
   return {
