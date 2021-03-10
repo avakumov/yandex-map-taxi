@@ -20,9 +20,7 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
   const [errorMessage, setErrorMessage] = useState("Обязательно для заполнения")
   useEffect(validate, [currentAddress, coordinates])
 
-
   const history = useHistory()
-
 
   function onLoadYMapApi(ymap: any) {
     setMapApi(ymap)
@@ -115,11 +113,7 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
       const firstGeoObject = res.geoObjects.get(0)
       const address = firstGeoObject.properties.get("name")
       isSetInputAddress && setCurrentAdress(address)
-      //рендер точки
-      ymap?.geoObjects.removeAll()
-      const placeMarker = createPlacemark(coords, address)
-      ymap.geoObjects.add(placeMarker)
-      //получить автомобили
+    
       const taxiRequest = {
         source_time: "time",
         addresses: [
@@ -130,7 +124,16 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
           },
         ],
       }
+      //получить автомобили
       api.getTaxi(taxiRequest).then((res) => {
+        //очистить карту
+        ymap?.geoObjects.removeAll()
+
+        //точка откуда
+        const placeMarker = createPlacemark(coords, address)
+        ymap.geoObjects.add(placeMarker)
+        
+
         const cars = res.data.crews_info
         cars.sort((a, b) => a.distance - b.distance)
 
@@ -142,6 +145,7 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
           const placeMarkerCar = createPlacemarkCar(car)
 
           ymap.geoObjects.add(placeMarkerCar)
+          const len = ymap.geoObjects.getLength()
         })
       })
     })
@@ -242,7 +246,6 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
     </form>
   )
 }
-
 
 function mapStateToProps(state: any) {
   return {
