@@ -19,7 +19,7 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
   const [submitted, setSubmitted] = useState(false)
   const [iconAddress, setIconAddress] = useState("")
   const [errorMessage, setErrorMessage] = useState("Обязательно для заполнения")
-  useEffect(validate, [currentAddress, iconAddress])
+  useEffect(validate, [currentAddress, iconAddress, coordinates, cars])
   useEffect(changeCenterMap, [coordinates])
 
   const history = useHistory()
@@ -29,7 +29,14 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
   }
 
   function changeCenterMap() {
-    ymap?.setCenter(coordinates);
+    ymap?.setCenter(coordinates)
+  }
+
+  function setColorMainPlaceMark(color: string) {
+    if (!ymap) return
+    const firstGeoObject = ymap.geoObjects.get(0)
+    if (!firstGeoObject) return
+    firstGeoObject.options.set("iconColor", color)
   }
 
   function createPlacemark(coord: Array<number>, address: string) {
@@ -41,7 +48,7 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
           iconCaption: address || "поиск...",
         },
         {
-          preset: "islands#yellowCircleDotIcon",
+          preset: "islands#redCircleDotIcon",
         }
       )
     )
@@ -73,7 +80,7 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
     errorMessage && submitted ? setShowError(true) : setShowError(false)
   }
   function validateAddress() {
-
+    setColorMainPlaceMark("red")
     if (!currentAddress) {
       return setErrorMessage("Обязательно для заполнения")
     }
@@ -89,6 +96,7 @@ function Home({ ymapApi, setMapApi, getOrder }: any) {
       return setErrorMessage("Ошибка в адресе")
     }
     setErrorMessage("")
+    setColorMainPlaceMark("yellow")
   }
 
   function checkAddress(address1: string, address2: string) {
